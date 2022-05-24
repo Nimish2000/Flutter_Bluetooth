@@ -310,7 +310,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                           elevation: 2,
                           child: Text("Press Me"),
                           onPressed: () {
-                            _sendOnMessageToBluetooth()
+                            _sendOnMessageToBluetooth();
                           },
                         ),
                       ],
