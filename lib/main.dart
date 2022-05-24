@@ -308,9 +308,9 @@ class _BluetoothAppState extends State<BluetoothApp> {
                         SizedBox(height: 15),
                         RaisedButton(
                           elevation: 2,
-                          child: Text("Bluetooth Settings"),
+                          child: Text("Press Me"),
                           onPressed: () {
-                            FlutterBluetoothSerial.instance.openSettings();
+                            _sendOnMessageToBluetooth()
                           },
                         ),
                       ],
@@ -345,7 +345,6 @@ class _BluetoothAppState extends State<BluetoothApp> {
 
   // Method to connect to bluetooth
   void _connect() async {
-    print(connection);
     setState(() {
       _isButtonUnavailable = true;
     });
@@ -353,13 +352,6 @@ class _BluetoothAppState extends State<BluetoothApp> {
       show('No device selected');
     } else {
       if (!isConnected) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => welcomeScreen(
-              device: _device,
-            ),
-          ),
-        );
         await BluetoothConnection.toAddress(_device!.address)
             .then((_connection) {
           show('Connected to the device');
@@ -367,7 +359,6 @@ class _BluetoothAppState extends State<BluetoothApp> {
           setState(() {
             _connected = true;
           });
-
           connection!.input!.listen(null).onDone(() {
             if (isDisconnecting) {
               print('Disconnecting locally!');
@@ -407,9 +398,9 @@ class _BluetoothAppState extends State<BluetoothApp> {
   // Method to send message,
   // for turning the Bluetooth device on
   void _sendOnMessageToBluetooth() async {
-    connection!.output.add(utf8.encode("1" + "\r\n") as Uint8List);
+    connection!.output.add(utf8.encode("0001" + "\r\n") as Uint8List);
     await connection!.output.allSent;
-    show('Device Turned On');
+    show("0001 Sent to device");
     setState(() {
       _deviceState = 1; // device on
     });
