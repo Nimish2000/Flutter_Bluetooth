@@ -348,30 +348,30 @@ class _BluetoothAppState extends State<BluetoothApp> {
       Navigator.of(context).push(MaterialPageRoute(
           builder: (context) =>
               welcomeScreen(device: _device as BluetoothDevice)));
-      if (!isConnected) {
-        await BluetoothConnection.toAddress(_device!.address)
-            .then((_connection) {
-          show('Connected to the device');
-          connection = _connection;
-          setState(() {
-            _connected = true;
-          });
-          connection!.input!.listen(null).onDone(() {
-            if (isDisconnecting) {
-              print('Disconnecting locally!');
-            } else {
-              print('Disconnected remotely!');
-            }
-            if (this.mounted) {
-              setState(() {});
-            }
-          });
-        }).catchError((error) {
-          show("Cannot Connect try again!!");
-        });
+      // if (!isConnected) {
+      //   await BluetoothConnection.toAddress(_device!.address)
+      //       .then((_connection) {
+      //     show('Connected to the device');
+      //     connection = _connection;
+      //     setState(() {
+      //       _connected = true;
+      //     });
+      //     connection!.input!.listen(null).onDone(() {
+      //       if (isDisconnecting) {
+      //         print('Disconnecting locally!');
+      //       } else {
+      //         print('Disconnected remotely!');
+      //       }
+      //       if (this.mounted) {
+      //         setState(() {});
+      //       }
+      //     });
+      //   }).catchError((error) {
+      //     show("Cannot Connect try again!!");
+      //   });
 
-        setState(() => _isButtonUnavailable = false);
-      }
+      //   setState(() => _isButtonUnavailable = false);
+      // }
     }
   }
 
