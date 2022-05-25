@@ -293,17 +293,15 @@ class _BluetoothAppState extends State<BluetoothApp> {
                           ),
                         ),
                         SizedBox(height: 15),
-                        GestureDetector(
-                          onTapDown:(_)
+                        RaisedButton(
+                          elevation: 1.0,
+                          onPressed: ()
                           {
-                            print('Button Pressed');
-                          },
-                          onTapUp: (_){
-                            print("Button Releasd");
+                            FlutterBluetoothSerial.instance.openSettings();
                           },
                           child: Text(
                             "Press Me",
-                            style: TextStyle(fontSize: 30.0),
+                            
                           ),
                           
                         ),
