@@ -47,6 +47,9 @@ class _welcomeScreenState extends State<welcomeScreen> {
   }
 
   void _connect() async {
+    setState(() {
+      isConnecting=true;
+    });
     await BluetoothConnection.toAddress(widget.device!.address)
         .then((_connection) {
       print('Connected to the device');
@@ -116,13 +119,13 @@ class _welcomeScreenState extends State<welcomeScreen> {
                     height: 0.0,
                   ),
             Container(
-              height: MediaQuery.of(context).size.height * 0.20,
+              height: MediaQuery.of(context).size.height * 0.18,
               child: Padding(
                 padding: EdgeInsets.only(
                   top: height * 0.12,
                   left: width * 0.1,
                   right: width * 0.1,
-                  bottom: 0.9,
+                  bottom: 1.0,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -262,20 +265,15 @@ class _welcomeScreenState extends State<welcomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          GestureDetector(
-            onLongPressDown: (_) {
-              _sendMessageToBluetooth(messageUp.toString());
-            },
-            onLongPressEnd: (_) {
+          InkWell(
+            borderRadius: BorderRadius.circular(100.0),
+            onTap: () {
               _sendMessageToBluetooth("@1234#0000%");
+              print("Button is released");
             },
             onTapDown: (_) {
-              //Send data of press
               _sendMessageToBluetooth(messageUp.toString());
-            },
-            onTapUp: (_) {
-              //Send data of release
-              _sendMessageToBluetooth("@1234#0000%");
+              print("button pressed");
             },
             child: Transform.rotate(
               angle: 187.0,
@@ -286,21 +284,15 @@ class _welcomeScreenState extends State<welcomeScreen> {
               ),
             ),
           ),
-          GestureDetector(
-            onLongPressDown: (_) {
+          InkWell(
+            borderRadius: BorderRadius.circular(100.0),
+            onTap: () {
               _sendMessageToBluetooth(messageDown.toString());
-            },
-            onLongPressEnd: (_) {
-              print("Long Pressed End");
-              _sendMessageToBluetooth("@1234#0000%");
+              print("Button is released");
             },
             onTapDown: (_) {
-              //Send data of press
-              _sendMessageToBluetooth(messageDown.toString());
-            },
-            onTapUp: (_) {
-              //Send data of release
               _sendMessageToBluetooth("@1234#0000%");
+              print("button pressed");
             },
             child: Transform.rotate(
               angle: 45.56,
@@ -325,13 +317,15 @@ class _welcomeScreenState extends State<welcomeScreen> {
       ),
       height: 100.0,
       width: 90.0,
-      child: IconButton(
-        padding: EdgeInsets.only(bottom: 10.0),
-        onPressed: () {
-          //Bluetooth Message will be send
-          print("Bottom controller is pressed");
+      child: InkWell(
+        borderRadius: BorderRadius.circular(100.0),
+        onTap: () {
+          print("Button is released");
         },
-        icon: Transform.rotate(
+        onTapDown: (_) {
+          print("button pressed");
+        },
+        child: Transform.rotate(
           angle: 187.0,
           child: Icon(
             icon,
@@ -344,13 +338,8 @@ class _welcomeScreenState extends State<welcomeScreen> {
   }
 
   void _sendMessageToBluetooth(String message) async {
-    print(connection.toString());
-    print(widget.device!.name.toString());
-    print(widget.device!.address.toString());
     message = message.trim();
-    print(message);
-      connection!.output.add(utf8.encode(message + "\r\n") as Uint8List);
-      await connection!.output.allSent;
-      show(message + " " + 'Send succesfully');
+    connection!.output.add(utf8.encode(message + "\r\n") as Uint8List);
+    await connection!.output.allSent;
   }
 }
