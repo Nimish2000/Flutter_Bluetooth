@@ -287,11 +287,11 @@ class _welcomeScreenState extends State<welcomeScreen> {
           InkWell(
             borderRadius: BorderRadius.circular(100.0),
             onTap: () {
-              _sendMessageToBluetooth(messageDown.toString());
+             _sendMessageToBluetooth("@1234#0000%");
               print("Button is released");
             },
             onTapDown: (_) {
-              _sendMessageToBluetooth("@1234#0000%");
+               _sendMessageToBluetooth(messageDown.toString());
               print("button pressed");
             },
             child: Transform.rotate(
