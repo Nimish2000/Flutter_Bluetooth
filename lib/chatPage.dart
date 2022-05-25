@@ -152,6 +152,7 @@ class _ChatPage extends State<ChatPage> {
                           ? () => _sendMessage(textEditingController.text)
                           : null),
                 ),
+                
               ],
             )
           ],

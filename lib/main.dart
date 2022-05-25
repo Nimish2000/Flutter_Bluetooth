@@ -97,18 +97,6 @@ class _BluetoothAppState extends State<BluetoothApp> {
     });
   }
 
-  @override
-  void dispose() {
-    // Avoid memory leak and disconnect
-    if (isConnected) {
-      isDisconnecting = true;
-      connection!.dispose();
-      connection = null;
-    }
-
-    super.dispose();
-  }
-
   // Request Bluetooth permission from the user
   Future<void> enableBluetooth() async {
     // Retrieving the current Bluetooth state
@@ -267,9 +255,8 @@ class _BluetoothAppState extends State<BluetoothApp> {
                             DropdownButton(
                               items: _getDeviceItems(),
                               onChanged: (value) {
-                                var temp = value;
                                 setState(() {
-                                  _device = temp as BluetoothDevice?;
+                                  _device = value as BluetoothDevice?;
                                 });
                               },
                               value: _devicesList.isNotEmpty ? _device : null,
@@ -306,12 +293,19 @@ class _BluetoothAppState extends State<BluetoothApp> {
                           ),
                         ),
                         SizedBox(height: 15),
-                        RaisedButton(
-                          elevation: 2,
-                          child: Text("Press Me"),
-                          onPressed: () {
-                            _sendOnMessageToBluetooth();
+                        GestureDetector(
+                          onTapDown:(_)
+                          {
+                            print('Button Pressed');
                           },
+                          onTapUp: (_){
+                            print("Button Releasd");
+                          },
+                          child: Text(
+                            "Press Me",
+                            style: TextStyle(fontSize: 30.0),
+                          ),
+                          
                         ),
                       ],
                     ),
@@ -351,6 +345,9 @@ class _BluetoothAppState extends State<BluetoothApp> {
     if (_device == null) {
       show('No device selected');
     } else {
+      Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) =>
+              welcomeScreen(device: _device as BluetoothDevice)));
       if (!isConnected) {
         await BluetoothConnection.toAddress(_device!.address)
             .then((_connection) {
@@ -398,7 +395,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
   // Method to send message,
   // for turning the Bluetooth device on
   void _sendOnMessageToBluetooth() async {
-    connection!.output.add(utf8.encode("0001" + "\r\n") as Uint8List);
+    connection!.output.add(utf8.encode("@1234#0001%" + "\r\n") as Uint8List);
     await connection!.output.allSent;
     show("0001 Sent to device");
     setState(() {

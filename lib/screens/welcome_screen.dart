@@ -8,7 +8,7 @@ import 'dart:typed_data';
 class welcomeScreen extends StatefulWidget {
   final BluetoothDevice? device;
   welcomeScreen({
-   required this.device,
+    required this.device,
   });
 
   @override
@@ -25,7 +25,25 @@ class _welcomeScreenState extends State<welcomeScreen> {
   @override
   void initState() {
     super.initState();
-    _connect();
+    print(widget.device!.name);
+    print(widget.device!.address);
+    BluetoothConnection.toAddress(widget.device!.address).then((_connection) {
+      print('Connected to the device');
+      connection = _connection;
+      setState(() {
+        isConnecting = false;
+      });
+      connection!.input!.listen(null).onDone(() {
+        if (this.mounted) {
+          setState(() {});
+        }
+      });
+    }).catchError((error) {
+      setState(() {
+        isConnecting = false;
+      });
+      print('Cannot connect, exception occured');
+    });
   }
 
   void _connect() async {
@@ -36,7 +54,7 @@ class _welcomeScreenState extends State<welcomeScreen> {
       setState(() {
         isConnecting = false;
       });
-      show('Connected to '+ widget.device!.name.toString());
+      show('Connected to ' + widget.device!.name.toString());
       connection!.input!.listen(null).onDone(() {
         if (this.mounted) {
           setState(() {});
@@ -117,8 +135,8 @@ class _welcomeScreenState extends State<welcomeScreen> {
                             I: IconButton(
                               onPressed: () {
                                 //Here we will do bluetooth settings
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => BluetoothApp()));
+                                //Connect the bluetooth
+                                _connect();
                                 print("Blutooth Icon is pressed");
                               },
                               icon: Icon(
@@ -155,7 +173,7 @@ class _welcomeScreenState extends State<welcomeScreen> {
                       onPressed: () {
                         //Here we will do open Setting stuff
                         FlutterBluetoothSerial.instance.openSettings();
-                       
+
                         print('Setting Icon button is pressed');
                       },
                       icon: Icon(
@@ -196,11 +214,13 @@ class _welcomeScreenState extends State<welcomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  controllerWidget(messageUp: '0001', messageDown: '0010'),
+                  controllerWidget(
+                      messageUp: '@1234#0001%', messageDown: '@1234#0010%'),
                   SizedBox(
                     width: 50.0,
                   ),
-                  controllerWidget(messageUp: '0100', messageDown: '1000'),
+                  controllerWidget(
+                      messageUp: '@1234#0100%', messageDown: '@1234#1000%'),
                 ],
               ),
             ),
@@ -242,12 +262,22 @@ class _welcomeScreenState extends State<welcomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          IconButton(
-            padding: EdgeInsets.only(right: 10.0),
-            onPressed: () {
+          GestureDetector(
+            onLongPressDown: (_) {
               _sendMessageToBluetooth(messageUp.toString());
             },
-            icon: Transform.rotate(
+            onLongPressEnd: (_) {
+              _sendMessageToBluetooth("@1234#0000%");
+            },
+            onTapDown: (_) {
+              //Send data of press
+              _sendMessageToBluetooth(messageUp.toString());
+            },
+            onTapUp: (_) {
+              //Send data of release
+              _sendMessageToBluetooth("@1234#0000%");
+            },
+            child: Transform.rotate(
               angle: 187.0,
               child: Icon(
                 Icons.arrow_forward_ios,
@@ -256,12 +286,23 @@ class _welcomeScreenState extends State<welcomeScreen> {
               ),
             ),
           ),
-          IconButton(
-            padding: EdgeInsets.only(left: 10.0),
-            onPressed: () {
+          GestureDetector(
+            onLongPressDown: (_) {
               _sendMessageToBluetooth(messageDown.toString());
             },
-            icon: Transform.rotate(
+            onLongPressEnd: (_) {
+              print("Long Pressed End");
+              _sendMessageToBluetooth("@1234#0000%");
+            },
+            onTapDown: (_) {
+              //Send data of press
+              _sendMessageToBluetooth(messageDown.toString());
+            },
+            onTapUp: (_) {
+              //Send data of release
+              _sendMessageToBluetooth("@1234#0000%");
+            },
+            child: Transform.rotate(
               angle: 45.56,
               child: Icon(
                 Icons.arrow_forward_ios,
@@ -305,15 +346,11 @@ class _welcomeScreenState extends State<welcomeScreen> {
   void _sendMessageToBluetooth(String message) async {
     print(connection.toString());
     print(widget.device!.name.toString());
+    print(widget.device!.address.toString());
     message = message.trim();
     print(message);
-    try {
       connection!.output.add(utf8.encode(message + "\r\n") as Uint8List);
       await connection!.output.allSent;
       show(message + " " + 'Send succesfully');
-    } catch (e) {
-      print('Message not sent');
-      show('Command not sent to Bluetooth');
-    }
   }
 }
