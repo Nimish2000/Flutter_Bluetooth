@@ -48,7 +48,7 @@ class _welcomeScreenState extends State<welcomeScreen> {
 
   void _connect() async {
     setState(() {
-      isConnecting=true;
+      isConnecting = true;
     });
     await BluetoothConnection.toAddress(widget.device!.address)
         .then((_connection) {
@@ -237,12 +237,14 @@ class _welcomeScreenState extends State<welcomeScreen> {
                 children: [
                   bottomController(
                     icon: Icons.arrow_forward_ios,
+                    isUp: true,
                   ),
                   SizedBox(
                     width: 50.0,
                   ),
                   bottomController(
                     icon: Icons.arrow_back_ios,
+                    isUp: false,
                   ),
                 ],
               ),
@@ -287,11 +289,11 @@ class _welcomeScreenState extends State<welcomeScreen> {
           InkWell(
             borderRadius: BorderRadius.circular(100.0),
             onTap: () {
-             _sendMessageToBluetooth("@1234#0000%");
+              _sendMessageToBluetooth("@1234#0000%");
               print("Button is released");
             },
             onTapDown: (_) {
-               _sendMessageToBluetooth(messageDown.toString());
+              _sendMessageToBluetooth(messageDown.toString());
               print("button pressed");
             },
             child: Transform.rotate(
@@ -308,7 +310,7 @@ class _welcomeScreenState extends State<welcomeScreen> {
     );
   }
 
-  Widget bottomController({icon}) {
+  Widget bottomController({icon, required bool isUp}) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50.0),
@@ -319,11 +321,18 @@ class _welcomeScreenState extends State<welcomeScreen> {
       width: 90.0,
       child: InkWell(
         borderRadius: BorderRadius.circular(100.0),
-        onTap: () {
-          print("Button is released");
-        },
         onTapDown: (_) {
-          print("button pressed");
+          if (isUp) {
+            _sendMessageToBluetooth("@1234#0001%");
+            _sendMessageToBluetooth("@1234#0010%");
+            _sendMessageToBluetooth("@1234#0100%");
+            _sendMessageToBluetooth("@1234#1000%");
+          } else {
+            _sendMessageToBluetooth("@1234#0000%");
+            _sendMessageToBluetooth("@1234#0000%");
+            _sendMessageToBluetooth("@1234#0000%");
+            _sendMessageToBluetooth("@1234#0000%");
+          }
         },
         child: Transform.rotate(
           angle: 187.0,
