@@ -7,10 +7,8 @@ import 'dart:typed_data';
 
 class welcomeScreen extends StatefulWidget {
   final BluetoothDevice? device;
-  welcomeScreen({
-    required this.device,
-  });
 
+  welcomeScreen({required this.device});
   @override
   State<welcomeScreen> createState() => _welcomeScreenState();
 }
@@ -25,10 +23,10 @@ class _welcomeScreenState extends State<welcomeScreen> {
   @override
   void initState() {
     super.initState();
-    print(widget.device!.name);
-    print(widget.device!.address);
+
     BluetoothConnection.toAddress(widget.device!.address).then((_connection) {
       print('Connected to the device');
+      show("Connected to " + widget.device!.name.toString());
       connection = _connection;
       setState(() {
         isConnecting = false;
@@ -57,7 +55,6 @@ class _welcomeScreenState extends State<welcomeScreen> {
       setState(() {
         isConnecting = false;
       });
-      show('Connected to ' + widget.device!.name.toString());
       connection!.input!.listen(null).onDone(() {
         if (this.mounted) {
           setState(() {});
@@ -110,14 +107,6 @@ class _welcomeScreenState extends State<welcomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            isConnecting
-                ? LinearProgressIndicator(
-                    backgroundColor: Colors.yellow,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                  )
-                : Container(
-                    height: 0.0,
-                  ),
             Container(
               height: MediaQuery.of(context).size.height * 0.18,
               child: Padding(
@@ -140,6 +129,7 @@ class _welcomeScreenState extends State<welcomeScreen> {
                                 //Here we will do bluetooth settings
                                 //Connect the bluetooth
                                 _connect();
+
                                 print("Blutooth Icon is pressed");
                               },
                               icon: Icon(
@@ -321,7 +311,10 @@ class _welcomeScreenState extends State<welcomeScreen> {
       width: 90.0,
       child: InkWell(
         borderRadius: BorderRadius.circular(100.0),
+        onTap: () {},
         onTapDown: (_) {
+          print("Button tapped");
+
           if (isUp) {
             _sendMessageToBluetooth("@1234#0001%");
             _sendMessageToBluetooth("@1234#0010%");

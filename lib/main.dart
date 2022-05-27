@@ -295,15 +295,12 @@ class _BluetoothAppState extends State<BluetoothApp> {
                         SizedBox(height: 15),
                         RaisedButton(
                           elevation: 1.0,
-                          onPressed: ()
-                          {
+                          onPressed: () {
                             FlutterBluetoothSerial.instance.openSettings();
                           },
                           child: Text(
                             "Press Me",
-                            
                           ),
-                          
                         ),
                       ],
                     ),
@@ -344,8 +341,9 @@ class _BluetoothAppState extends State<BluetoothApp> {
       show('No device selected');
     } else {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) =>
-              welcomeScreen(device: _device as BluetoothDevice)));
+          builder: (context) => welcomeScreen(
+                device: _device,
+              )));
       // if (!isConnected) {
       //   await BluetoothConnection.toAddress(_device!.address)
       //       .then((_connection) {
