@@ -342,7 +342,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
       show('No device selected');
     } else {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => arduinoScreen(
+          builder: (context) => welcomeScreen(
                 device: _device,
               )));
       // if (!isConnected) {
