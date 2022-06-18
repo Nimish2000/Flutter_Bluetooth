@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:demoapp/screens/welcome_screen.dart';
+import 'screens/arduino_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -299,7 +300,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
                             FlutterBluetoothSerial.instance.openSettings();
                           },
                           child: Text(
-                            "Press Me",
+                            "Setting",
                           ),
                         ),
                       ],
@@ -341,7 +342,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
       show('No device selected');
     } else {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => welcomeScreen(
+          builder: (context) => arduinoScreen(
                 device: _device,
               )));
       // if (!isConnected) {

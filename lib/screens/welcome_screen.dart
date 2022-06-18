@@ -318,8 +318,8 @@ class _welcomeScreenState extends State<welcomeScreen> {
           if (isUp) {
             _sendMessageToBluetooth("@1234#0001%");
             _sendMessageToBluetooth("@1234#0010%");
-            _sendMessageToBluetooth("@1234#0100%");
-            _sendMessageToBluetooth("@1234#1000%");
+            // _sendMessageToBluetooth("@1234#0100%");
+            // _sendMessageToBluetooth("@1234#1000%");
           } else {
             _sendMessageToBluetooth("@1234#0000%");
             _sendMessageToBluetooth("@1234#0000%");
