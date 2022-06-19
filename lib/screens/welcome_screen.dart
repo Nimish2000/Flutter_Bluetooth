@@ -1,6 +1,5 @@
 import "package:flutter/material.dart";
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:demoapp/main.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -319,8 +318,8 @@ class _welcomeScreenState extends State<welcomeScreen> {
 
           if (isUp) {
             _sendMessageToBluetooth("@1234#0011%");
-            // _sendMessageToBluetooth("@1234#0100%");
-            // _sendMessageToBluetooth("@1234#1000%");
+          } else {
+            _sendMessageToBluetooth("@1234#1100%");
           }
         },
         child: Transform.rotate(
