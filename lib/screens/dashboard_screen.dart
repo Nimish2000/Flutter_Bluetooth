@@ -3,69 +3,51 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'device_screen.dart';
 
-class welcomeScreen extends StatefulWidget {
+class DashboardScreen extends StatefulWidget {
   final BluetoothDevice? device;
 
-  welcomeScreen({required this.device});
+  DashboardScreen({this.device});
   @override
-  State<welcomeScreen> createState() => _welcomeScreenState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _welcomeScreenState extends State<welcomeScreen> {
+class _DashboardScreenState extends State<DashboardScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   bool isBrightMode = true;
   BluetoothConnection? connection;
   bool get isConnected => connection != null && connection!.isConnected;
   bool isConnecting = true;
+  BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
 
   @override
   void initState() {
     super.initState();
-
-    BluetoothConnection.toAddress(widget.device!.address).then((_connection) {
-      print('Connected to the device');
-      show("Connected to " + widget.device!.name.toString());
-      connection = _connection;
+    if (widget.device != null) {
+      BluetoothConnection.toAddress(widget.device!.address).then((_connection) {
+        show("Connected to " + widget.device!.name.toString());
+        connection = _connection;
+        setState(() {
+          isConnecting = false;
+        });
+        connection!.input!.listen(null).onDone(() {
+          if (this.mounted) {
+            setState(() {});
+          }
+        });
+      }).catchError((error) {
+        setState(() {
+          isConnecting = false;
+        });
+        show("Not able to connect!! Try Again");
+      });
+    } else {
       setState(() {
         isConnecting = false;
       });
-      connection!.input!.listen(null).onDone(() {
-        if (this.mounted) {
-          setState(() {});
-        }
-      });
-    }).catchError((error) {
-      setState(() {
-        isConnecting = false;
-      });
-      print('Cannot connect, exception occured');
-    });
-  }
-
-  void _connect() async {
-    setState(() {
-      isConnecting = true;
-    });
-    await BluetoothConnection.toAddress(widget.device!.address)
-        .then((_connection) {
-      print('Connected to the device');
-      connection = _connection;
-      setState(() {
-        isConnecting = false;
-      });
-      connection!.input!.listen(null).onDone(() {
-        if (this.mounted) {
-          setState(() {});
-        }
-      });
-    }).catchError((error) {
-      setState(() {
-        isConnecting = false;
-      });
-      print('Cannot connect, exception occured');
-      show('Cannot Connect Try again');
-    });
+      show("No device connected !!");
+    }
   }
 
   Future show(
@@ -107,6 +89,9 @@ class _welcomeScreenState extends State<welcomeScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
+              child: isConnecting ? LinearProgressIndicator() : null,
+            ),
+            Container(
               height: MediaQuery.of(context).size.height * 0.18,
               child: Padding(
                 padding: EdgeInsets.only(
@@ -125,11 +110,9 @@ class _welcomeScreenState extends State<welcomeScreen> {
                             c: Colors.red,
                             I: IconButton(
                               onPressed: () {
-                                //Here we will do bluetooth settings
-                                //Connect the bluetooth
-                                _connect();
-
-                                print("Blutooth Icon is pressed");
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        const DeviceScreen()));
                               },
                               icon: Icon(
                                 Icons.bluetooth,
@@ -165,8 +148,6 @@ class _welcomeScreenState extends State<welcomeScreen> {
                       onPressed: () {
                         //Here we will do open Setting stuff
                         FlutterBluetoothSerial.instance.openSettings();
-
-                        print('Setting Icon button is pressed');
                       },
                       icon: Icon(
                         Icons.settings_sharp,
@@ -185,12 +166,39 @@ class _welcomeScreenState extends State<welcomeScreen> {
             Container(
               height: height * 0.15,
               child: Center(
-                child: Text(
-                  "Company_Name",
-                  style: TextStyle(
-                      fontSize: 25.0,
-                      fontWeight: FontWeight.bold,
-                      color: isBrightMode ? Colors.black : Colors.white),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "LEFE  乐",
+                      style: TextStyle(
+                          fontSize: 35.0,
+                          fontWeight: FontWeight.bold,
+                          color: isBrightMode ? Colors.black : Colors.white),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 30.0, top: 0.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 4.0,
+                            width: 70.0,
+                            color: Colors.red,
+                          ),
+                          Text(
+                            "SUSPENSOES",
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    isBrightMode ? Colors.black : Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                  ],
                 ),
               ),
             ),
@@ -260,11 +268,13 @@ class _welcomeScreenState extends State<welcomeScreen> {
             borderRadius: BorderRadius.circular(100.0),
             onTap: () {
               _sendMessageToBluetooth("@1234#0000%");
-              print("Button is released");
             },
             onTapDown: (_) {
-              _sendMessageToBluetooth(messageUp.toString());
-              print("button pressed");
+              if (connection == null) {
+                show("Please connect to bluetooth");
+              } else {
+                _sendMessageToBluetooth(messageUp.toString());
+              }
             },
             child: Transform.rotate(
               angle: 187.0,
@@ -282,8 +292,11 @@ class _welcomeScreenState extends State<welcomeScreen> {
               print("Button is released");
             },
             onTapDown: (_) {
-              _sendMessageToBluetooth(messageDown.toString());
-              print("button pressed");
+              if (connection == null) {
+                show("Please connect to bluetooth");
+              } else {
+                _sendMessageToBluetooth(messageDown.toString());
+              }
             },
             child: Transform.rotate(
               angle: 45.56,
@@ -314,12 +327,14 @@ class _welcomeScreenState extends State<welcomeScreen> {
           _sendMessageToBluetooth("@1234#0000%");
         },
         onTapDown: (_) {
-          print("Button tapped");
-
-          if (isUp) {
-            _sendMessageToBluetooth("@1234#0011%");
+          if (connection == null) {
+            show("Please connect to bluetooth");
           } else {
-            _sendMessageToBluetooth("@1234#1100%");
+            if (isUp) {
+              _sendMessageToBluetooth("@1234#0011%");
+            } else {
+              _sendMessageToBluetooth("@1234#1100%");
+            }
           }
         },
         child: Transform.rotate(

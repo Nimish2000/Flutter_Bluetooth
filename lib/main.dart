@@ -8,8 +8,7 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:demoapp/screens/welcome_screen.dart';
-import 'screens/arduino_screen.dart';
+import 'package:demoapp/screens/dashboard_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,11 +18,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'RC Car',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: BluetoothApp(),
+      home: DashboardScreen(),
     );
   }
 }
@@ -342,7 +341,7 @@ class _BluetoothAppState extends State<BluetoothApp> {
       show('No device selected');
     } else {
       Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => welcomeScreen(
+          builder: (context) => DashboardScreen(
                 device: _device,
               )));
       // if (!isConnected) {
